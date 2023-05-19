@@ -1,10 +1,7 @@
-import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    kotlin("jvm") version "1.4.30"
-    id("org.jetbrains.compose") version "0.3.1"
+    kotlin("jvm") version "1.8.20"
+    id("org.jetbrains.compose") version "1.4.0"
 }
 
 group = "me.niko"
@@ -24,12 +21,8 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
-    implementation("origami:origami:4.5.1-3")
-    implementation("origami:filters:1.20")
-}
-
-tasks.withType<KotlinCompile>() {
-    kotlinOptions.jvmTarget = "11"
+    implementation("origami:origami:4.7.0-10")
+    implementation("origami:filters:1.39")
 }
 
 compose.desktop {

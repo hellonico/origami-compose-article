@@ -1,5 +1,4 @@
-import androidx.compose.desktop.AppManager
-import androidx.compose.desktop.Window
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +11,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import org.opencv.core.Mat
 import org.opencv.core.MatOfByte
 import org.opencv.imgcodecs.Imgcodecs
@@ -29,27 +32,34 @@ fun asImageAsset(image: Mat): ImageBitmap {
     Imgcodecs.imencode(".jpg", image, bytes)
     val byteArray = ByteArray((image.total() * image.channels()).toInt())
     bytes.get(0, 0, byteArray)
-    return org.jetbrains.skija.Image.makeFromEncoded(byteArray).asImageBitmap()
+    return org.jetbrains.skia.Image.makeFromEncoded(byteArray).toComposeImageBitmap()
 }
 
-fun main() = Window {
-    Origami.init()
+fun main() = application {
+    Window(
+        onCloseRequest = ::exitApplication,
+        title = "Compose for Desktop",
+        state = rememberWindowState(width = 300.dp, height = 300.dp)
+    ) {
 
-    val name = remember { mutableStateOf("") }
-    val target = object : DropTarget() {
-        @Synchronized
-        override fun drop(evt: DropTargetDropEvent) {
-            evt.acceptDrop(DnDConstants.ACTION_REFERENCE)
-            val droppedFiles = evt.transferable.getTransferData(DataFlavor.javaFileListFlavor) as List<*>
-            droppedFiles.first()?.let {
-                name.value = (it as File).absolutePath
+        Origami.init()
+
+        val name = remember { mutableStateOf("") }
+        val target = object : DropTarget() {
+            @Synchronized
+            override fun drop(evt: DropTargetDropEvent) {
+                evt.acceptDrop(DnDConstants.ACTION_REFERENCE)
+                val droppedFiles = evt.transferable.getTransferData(DataFlavor.javaFileListFlavor) as List<*>
+                droppedFiles.first()?.let {
+                    name.value = (it as File).absolutePath
+                }
             }
         }
-    }
-    AppManager.windows.first().window.contentPane.dropTarget = target
+        this.window.dropTarget = target
 
-    MaterialTheme {
-        MyCustomOrigamiComponent(name)
+        MaterialTheme {
+            MyCustomOrigamiComponent(name)
+        }
     }
 }
 
@@ -80,7 +90,8 @@ fun MyCustomOrigamiComponent(name: MutableState<String>) {
             Image(
                 bitmap = asImageAsset(filter.apply(Imgcodecs.imread(name.value))),
                 contentDescription = "Icon",
-                modifier = Modifier.fillMaxSize())
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }
