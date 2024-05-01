@@ -5,5 +5,4 @@ pluginManagement {
     }
     
 }
-rootProject.name = "articlecompose"
-
+rootProject.name = "webcam-compose"
