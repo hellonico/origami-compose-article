@@ -37,8 +37,9 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
-    implementation("origami:origami:4.9.0-0")
-    implementation("origami:filters:1.43")
+    implementation("origami:origami:4.9.0-8")
+    implementation("org.clojure:clojure:1.11.3")
+    implementation("origami:filters:1.48")
 }
 
 compose.desktop {
